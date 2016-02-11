@@ -1,0 +1,18 @@
+{
+  "name": "library",
+  "homepage": "https://github.com/AlgusDark/typescript-101",
+  "authors": [
+    "Algus Dark <algus.dark@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

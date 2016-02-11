@@ -109,7 +109,7 @@ sum("1", 1) // compile-time error
 
 let codeName = "Solid Snake" // string type inference
 
-let arr: Array<string>; // or -- arr: Array<string>
+let arr: string[]; // or -- arr: Array<string>
 
 enum colors {red, green, blue}; // colors.green --> 1
 
@@ -123,7 +123,7 @@ sn = '123';
 ```
 
 ## Union types
-A union type `A` | `B` represents an entity that is either of type `A` or type `B`
+A union type `A` | `B` represents an entity that is either of type `A` or type `B`.
 
 ```javascript
 interface RunOptions {
@@ -254,7 +254,7 @@ console.log(person.secret); // I'm Batman
 ```
 
 ## Static Properties
-* Static properties belong to the class itself, and not an instance+
+* Static properties belong to the class itself, and not an instance
 
 ```javascript
 class Shape{
@@ -273,6 +273,7 @@ console.log(Shape.count); // 2
 
 ## Abstract classes and methods
 An abstract class is allowed to have methods with no implementation, and cannot be constructed.
+
 ```javascript
 abstract class Base {
     abstract getThing(): string;
