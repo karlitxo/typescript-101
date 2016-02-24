@@ -1,3 +1,39 @@
+- [Typescript 101](#typescript-101)
+- [Contents](#contents)
+- [References](#references)
+- [Install Typescript](#install-typescript)
+- [Using Typescript Compiler](#using-typescript-compiler)
+  - [tsconfig.json](#tsconfigjson)
+- [Smarter Control Flow Analysis](#smarter-control-flow-analysis)
+  - [Unreachable Code](#unreachable-code)
+  - [Unused labels](#unused-labels)
+  - [Implicit Returns](#implicit-returns)
+  - [Case clause fall-throughs](#case-clause-fall-throughs)
+- [Typescript Types](#typescript-types)
+  - [Basic Type Examples](#basic-type-examples)
+  - [Union types](#union-types)
+  - [Intersection types](#intersection-types)
+  - [String Literal Types](#string-literal-types)
+- [Classes](#classes)
+  - [Inheritance](#inheritance)
+  - [Public / Private Modifiers](#public--private-modifiers)
+  - [Accessors (Getters/Setters)](#accessors-getterssetters)
+  - [Static Properties](#static-properties)
+  - [Abstract classes and methods](#abstract-classes-and-methods)
+- [Interfaces](#interfaces)
+  - [Class Types](#class-types)
+  - [Object Types](#object-types)
+  - [Function types](#function-types)
+  - [Fluent Interfaces](#fluent-interfaces)
+  - [Decorators](#decorators)
+- [Modules](#modules)
+  - [Internal Modules](#internal-modules)
+  - [External Modules](#external-modules)
+    - [Using AMD (RequireJS)](#using-amd-requirejs)
+  - [Module Augmentation](#module-augmentation)
+  - [Concatenate AMD and System modules with --outFile](#concatenate-amd-and-system-modules-with---outfile)
+- [Typescript ES6/7 features support](#typescript-es67-features-support)
+
 # Typescript 101
 This repo is a quick introduction to typescript.
 
@@ -6,10 +42,12 @@ This repo is a quick introduction to typescript.
 - [Install Typescript](#install-typescript)
 - [Using Typescript Compiler](#using-typescript-compiler)
   - [tsconfig.json](#tsconfig.json)
+- [Smarter Control Flow Analysis](#smarter-control-flow-analysis)
 - [Typescript Types](#typescript-types)
   - [Basic Type Examples](#basic-type-examples)
   - [Union types](#union-types)
   - [Intersection types](#intersection-types)
+  - [String Literal Types](#string-literal-types)
 - [Classes](#classes)
   - [Inheritance](#inheritance)
   - [Public / Private Modifiers](#public--private-modifiers)
@@ -26,6 +64,7 @@ This repo is a quick introduction to typescript.
   - [Internal Modules](#internal-modules)
   - [External Modules](#external-modules)
     - [Using AMD (RequireJS)](#using-amd-requirejs)
+  - [Module Augmentation](#module-augmentation)
 - [Typescript ES6/7 features support](#typescript-es67-features-support)
 
 # References
@@ -89,6 +128,52 @@ If the `"exclude"` property is specified, the compiler includes all TypeScript (
 The `"files"` property cannot be used in conjunction with the `"exclude"` property.
 
 Compiler options specified on the command line override those specified in the `tsconfig.json` file.
+
+# Smarter Control Flow Analysis
+
+It is common for complex logic that results in many branching code paths to produce hard to find bugs. TypeScript 1.8 delivers better control flow analysis to help you catch these at compile time.
+
+## Unreachable Code
+
+JavaScript’s automatic semicolon insertion is fairly useful, but it can also lead to unwanted results at times. You can toggle this feature off with the `--allowUnreachableCode` flag.
+
+```javascript
+function importantData() {
+    return          // Automatic semicolon insertion triggered with newline
+    {
+        x: "thing"  // Error: Unreachable code detected.
+    }
+}
+```
+
+## Unused labels
+
+These are turned on by default; use `--allowUnusedLabels` to stop reporting these errors.
+
+```javascript
+loop: while (x > 0) {  // Error: Unused label.
+    x++;
+}
+```
+
+## Implicit Returns
+In JavaScript, reaching the end of a function with no return statement results in implicitly returning **undefined**. Sometimes this is the intended behavior, but often times it can be a red flag for gaps in complex logic. Unlike unreachable code, this check is **off** by default. To get the added safety, just add the `--noImplicitReturns` flag.
+
+## Case clause fall-throughs
+
+This check is turned **off** by default, and can be enabled using `--noFallthroughCasesInSwitch`.
+
+```javascript
+switch (x % 2) {
+    case 0: // Error: Fallthrough case in switch.
+        console.log("even");
+
+    case 1:
+        console.log("odd");
+        break;
+}
+```
+
 
 # Typescript Types
 * Number
@@ -168,6 +253,23 @@ var abc: A & B & C;
 abc.a = "hello";
 abc.b = "hello";
 abc.c = "hello";
+```
+
+## String Literal Types
+
+It is very common for JavaScript libraries to consume a string as a configuration parameter, and usually in such cases you want to restrict the possible strings to a certain set.
+
+Starting with TypeScript 1.8, strings in a type position will become string literal types. Only exact string matches are assignable to string literal types, and like any other type, they can be used in union types as well.
+
+```javascript
+interface AnimationOptions {
+    deltaX: number;
+    deltaY: number;
+    easing: "ease-in" | "ease-out" | "ease-in-out";
+}
+
+// Error: Type '"out"' is not assignable to type '"ease-in" | "ease-out" | "ease-in-out"'
+new UIElement().animate({ deltaX: 100, deltaY: 100, easing: "out" });
 ```
 
 # Classes
@@ -478,6 +580,78 @@ export class DataService implements IDataService {
     msg = 'Data from API Call';
     getMessage() { return this.msg; }
 }
+```
+
+## Module Augmentation
+
+With module augmentation, users have the ability to extend existing modules such that consumers can specify if they want to import the whole module or just a subset. This can be accomplished by simply adding an ambient module declaration and extending any existing types.
+
+```javascript
+// scale.ts
+export class Scale {
+    weightOnEarth(mass) {}
+}
+// advancedScale.ts
+import { Scale } from "./scale" ;
+
+// create augmentation for Scale
+declare module "./scale" {
+    // Augment Core class via interface merging
+    interface Scale {
+        weightOnMoon(mass); // not everyone needs moon weight
+    }
+}
+Scale.prototype.advancedMethod = /* insert implementation */;
+
+```
+
+```javascript
+// consumer.ts
+import { Scale } from "./scale";
+import "./advancedScale";
+
+let scale: Scale;
+scale.weightOnMoon(10);  // ok
+```
+
+## Concatenate AMD and System modules with --outFile
+
+Specifying `--outFile` in conjunction with `--module` amd or `--module` system will concatenate all modules in the compilation into a single output file containing multiple module closures.
+
+A module name will be computed for each module based on its relative location to `rootDir`.
+
+```javascript
+// file src/a.ts
+import * as B from "./lib/b";
+export function createA() {
+    return B.createB();
+}
+```
+
+```javascript
+// file src/lib/b.ts
+export function createB() {
+    return { };
+}
+```
+
+Results in:
+
+```javascript
+define("lib/b", ["require", "exports"], function (require, exports) {
+    "use strict";
+    function createB() {
+        return {};
+    }
+    exports.createB = createB;
+});
+define("a", ["require", "exports", "lib/b"], function (require, exports, B) {
+    "use strict";
+    function createA() {
+        return B.createB();
+    }
+    exports.createA = createA;
+});
 ```
 
 # Typescript ES6/7 features support
