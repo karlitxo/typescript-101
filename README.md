@@ -1,5 +1,7 @@
-- [Typescript 101](#typescript-101)
-- [Contents](#contents)
+# Typescript 101
+This repo is a quick introduction to typescript.
+
+# Contents
 - [References](#references)
 - [Install Typescript](#install-typescript)
 - [Using Typescript Compiler](#using-typescript-compiler)
@@ -32,39 +34,6 @@
     - [Using AMD (RequireJS)](#using-amd-requirejs)
   - [Module Augmentation](#module-augmentation)
   - [Concatenate AMD and System modules with --outFile](#concatenate-amd-and-system-modules-with---outfile)
-- [Typescript ES6/7 features support](#typescript-es67-features-support)
-
-# Typescript 101
-This repo is a quick introduction to typescript.
-
-# Contents
-- [References](#references)
-- [Install Typescript](#install-typescript)
-- [Using Typescript Compiler](#using-typescript-compiler)
-  - [tsconfig.json](#tsconfig.json)
-- [Smarter Control Flow Analysis](#smarter-control-flow-analysis)
-- [Typescript Types](#typescript-types)
-  - [Basic Type Examples](#basic-type-examples)
-  - [Union types](#union-types)
-  - [Intersection types](#intersection-types)
-  - [String Literal Types](#string-literal-types)
-- [Classes](#classes)
-  - [Inheritance](#inheritance)
-  - [Public / Private Modifiers](#public--private-modifiers)
-  - [Accessors (Getters/Setters)](#accessors-getterssetters)
-  - [Static Properties](#static-properties)
-  - [Abstract classes and methods](#abstract-classes-and-methods)
-- [Interfaces](#interfaces)
-  - [Class Types](#class-types)
-  - [Object Types](#object-types)
-  - [Function types](#function-types)
-- [Fluent Interfaces](#fluent-interfaces)
-- [Decorators](#decorators)
-- [Modules](#modules)
-  - [Internal Modules](#internal-modules)
-  - [External Modules](#external-modules)
-    - [Using AMD (RequireJS)](#using-amd-requirejs)
-  - [Module Augmentation](#module-augmentation)
 - [Typescript ES6/7 features support](#typescript-es67-features-support)
 
 # References
